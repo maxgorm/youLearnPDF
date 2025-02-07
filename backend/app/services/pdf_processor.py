@@ -66,16 +66,30 @@ class PDFProcessor:
         if text_blocks:  # If searchable text exists
             for block in text_blocks:
                 if "lines" in block:
+                    # Group spans by their vertical position (y-coordinate)
+                    line_groups: Dict[float, List[Dict]] = {}
                     for line in block["lines"]:
-                        # Combine all spans in a line
-                        line_text = " ".join(span["text"].strip() for span in line["spans"] if span["text"].strip())
+                        for span in line["spans"]:
+                            if span["text"].strip():
+                                y_pos = span["bbox"][1]  # top y-coordinate
+                                if y_pos not in line_groups:
+                                    line_groups[y_pos] = []
+                                line_groups[y_pos].append(span)
+                    
+                    # Sort spans horizontally within each line group and combine
+                    for y_pos, spans in line_groups.items():
+                        # Sort spans by x-coordinate
+                        spans.sort(key=lambda span: span["bbox"][0])
+                        
+                        # Combine text from spans
+                        line_text = " ".join(span["text"].strip() for span in spans)
                         if line_text:
-                            # Use the bounding box of the entire line
+                            # Calculate bounding box for the entire line
                             bbox = [
-                                min(span["bbox"][0] for span in line["spans"]),  # leftmost x
-                                min(span["bbox"][1] for span in line["spans"]),  # topmost y
-                                max(span["bbox"][2] for span in line["spans"]),  # rightmost x
-                                max(span["bbox"][3] for span in line["spans"])   # bottommost y
+                                min(span["bbox"][0] for span in spans),  # leftmost x
+                                min(span["bbox"][1] for span in spans),  # topmost y
+                                max(span["bbox"][2] for span in spans),  # rightmost x
+                                max(span["bbox"][3] for span in spans)   # bottommost y
                             ]
                             blocks.append({
                                 "text": line_text,

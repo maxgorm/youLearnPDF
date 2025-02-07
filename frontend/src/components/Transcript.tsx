@@ -8,8 +8,13 @@ const cleanText = (text: string): string => {
                    .replace(/\s+/g, ' ')   // Normalize multiple spaces
                    .trim();
   
-  // Remove citations in square brackets (including multi-line and comma-separated)
-  cleaned = cleaned.replace(/\[(?:\s*\d+\s*(?:,\s*\d+\s*)*)\]/g, '');
+  // Format citations to ensure they're on one line and properly spaced
+  cleaned = cleaned.replace(/\[\s*(\d+(?:\s*,\s*\d+)*)\s*\]/g, (match, nums) => {
+    const formattedNums = nums.split(',')
+                             .map((n: string) => n.trim())
+                             .join(', ');
+    return `[${formattedNums}]`;
+  });
   
   // Fix mathematical subscripts (e.g., ht-1 -> ht₋₁)
   cleaned = cleaned.replace(/(\w+)[-](\d+)/g, (_, base, num) => {
@@ -19,9 +24,6 @@ const cleanText = (text: string): string => {
     };
     return `${base}${num.split('').map((d: string) => subscriptMap[d] || d).join('')}`;
   });
-  
-  // Remove any remaining square brackets with numbers
-  cleaned = cleaned.replace(/\[\s*\d+\s*\]/g, '');
   
   // Final cleanup of double spaces and trim
   cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
