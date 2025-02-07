@@ -66,19 +66,14 @@ class PDFProcessor:
         if text_blocks:  # If searchable text exists
             for block in text_blocks:
                 if "lines" in block:
-                    # Group spans by their vertical position (y-coordinate)
-                    line_groups: Dict[float, List[Dict]] = {}
+                    # Process each line directly
                     for line in block["lines"]:
-                        for span in line["spans"]:
-                            if span["text"].strip():
-                                y_pos = span["bbox"][1]  # top y-coordinate
-                                if y_pos not in line_groups:
-                                    line_groups[y_pos] = []
-                                line_groups[y_pos].append(span)
-                    
-                    # Sort spans horizontally within each line group and combine
-                    for y_pos, spans in line_groups.items():
-                        # Sort spans by x-coordinate
+                        # Get all non-empty spans in the line
+                        spans = [span for span in line["spans"] if span["text"].strip()]
+                        if not spans:
+                            continue
+                            
+                        # Sort spans by x-coordinate within the line
                         spans.sort(key=lambda span: span["bbox"][0])
                         
                         # Combine text from spans

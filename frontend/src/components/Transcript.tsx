@@ -24,6 +24,9 @@ const cleanText = (text: string): string => {
     };
     return `${base}${num.split('').map((d: string) => subscriptMap[d] || d).join('')}`;
   });
+
+  // Fix asterisk formatting (keep on same line)
+  cleaned = cleaned.replace(/\s*[∗*]\s*/g, '*');
   
   // Final cleanup of double spaces and trim
   cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
