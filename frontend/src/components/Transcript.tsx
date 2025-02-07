@@ -1,6 +1,34 @@
 import React, { useMemo } from 'react';
 import type { TextBlock } from '../types/pdf';
 
+// Text processing functions
+const cleanText = (text: string): string => {
+  // First normalize all line breaks and whitespace
+  let cleaned = text.replace(/\n+/g, ' ')  // Replace line breaks with spaces
+                   .replace(/\s+/g, ' ')   // Normalize multiple spaces
+                   .trim();
+  
+  // Remove citations in square brackets (including multi-line and comma-separated)
+  cleaned = cleaned.replace(/\[(?:\s*\d+\s*(?:,\s*\d+\s*)*)\]/g, '');
+  
+  // Fix mathematical subscripts (e.g., ht-1 -> ht₋₁)
+  cleaned = cleaned.replace(/(\w+)[-](\d+)/g, (_, base, num) => {
+    const subscriptMap: { [key: string]: string } = {
+      '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+      '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
+    };
+    return `${base}${num.split('').map((d: string) => subscriptMap[d] || d).join('')}`;
+  });
+  
+  // Remove any remaining square brackets with numbers
+  cleaned = cleaned.replace(/\[\s*\d+\s*\]/g, '');
+  
+  // Final cleanup of double spaces and trim
+  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+  
+  return cleaned;
+};
+
 interface TranscriptProps {
   blocks: TextBlock[];
   onTextClick: (block: TextBlock) => void;
@@ -42,7 +70,7 @@ const Transcript: React.FC<TranscriptProps> = ({ blocks, onTextClick, highlighte
                   }`}
                   onClick={() => onTextClick(block)}
                 >
-                  <div className="text-gray-700 text-sm leading-relaxed">{block.text}</div>
+                  <div className="text-gray-700 text-sm leading-relaxed">{cleanText(block.text)}</div>
                 </div>
               ))}
             </div>

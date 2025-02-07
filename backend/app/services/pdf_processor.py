@@ -67,13 +67,20 @@ class PDFProcessor:
             for block in text_blocks:
                 if "lines" in block:
                     for line in block["lines"]:
-                        for span in line["spans"]:
-                            if span["text"].strip():
-                                bbox = span["bbox"]
-                                blocks.append({
-                                    "text": span["text"],
-                                    "bbox": list(bbox)  # x0, y0, x1, y1
-                                })
+                        # Combine all spans in a line
+                        line_text = " ".join(span["text"].strip() for span in line["spans"] if span["text"].strip())
+                        if line_text:
+                            # Use the bounding box of the entire line
+                            bbox = [
+                                min(span["bbox"][0] for span in line["spans"]),  # leftmost x
+                                min(span["bbox"][1] for span in line["spans"]),  # topmost y
+                                max(span["bbox"][2] for span in line["spans"]),  # rightmost x
+                                max(span["bbox"][3] for span in line["spans"])   # bottommost y
+                            ]
+                            blocks.append({
+                                "text": line_text,
+                                "bbox": list(bbox)
+                            })
         else:  # If no searchable text, perform OCR
             pix = page.get_pixmap()
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
