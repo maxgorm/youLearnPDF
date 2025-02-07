@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --radius: 0.75rem;
+    --border: 220 13% 91%;
+
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+
+    --secondary: #f3f4f6;
+    --secondary-foreground: #1f2937;
+
+    --accent: #f8fafc;
+    --accent-foreground: #0f172a;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --ring: #2563eb;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased min-h-screen;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Base styles for better text rendering */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+}
+
+input, button {
+  font-family: inherit;
+}
+
+/* Custom styles for the PDF viewer layout */
+.main-content {
+  padding: 24px;
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-container {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  height: calc(100vh - 180px);
+  min-height: 600px;
+}
+
+.pdf-section {
+  flex: 1;
+  min-width: 0;  /* Prevents flex item from overflowing */
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.transcript-section {
+  width: 400px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 180px);
+}
+
+.input-section {
+  background: white;
+  padding: 48px;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 900px;
+  width: 100%;
+  margin: auto;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top;
+}
+
+.input-section.with-content {
+  margin: 0;
+  padding: 32px;
+  max-width: none;
+  transform: translateY(-40vh);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Ensure transcript content is scrollable */
+.transcript-section > div:last-child {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.transcript-section > div:last-child::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transcript-section > div:last-child::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.transcript-section > div:last-child::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
