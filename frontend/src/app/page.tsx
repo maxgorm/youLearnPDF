@@ -20,7 +20,7 @@ export default function Home() {
     setHighlightedBlock(undefined);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/extract', {
+      const response = await fetch('http://34.44.75.250:8000/api/v1/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
